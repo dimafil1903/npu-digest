@@ -4,16 +4,17 @@ from typing import Optional
 from .config import RkllamaConfig
 
 
-SUMMARIZE_PROMPT = """Article title: {title}
-Source: {source}
+SYSTEM_PROMPT = "Ти асистент для senior backend розробника. Завжди відповідай ТІЛЬКИ українською мовою."
 
-Text:
+SUMMARIZE_PROMPT = """Стаття: {title}
+Джерело: {source}
+
+Текст:
 {text}
 
 ---
-Summarize in 3 bullet points (Ukrainian), focus on what's important for a senior backend developer (Go, Python, AI/ML).
-No markdown symbols like ** or ##, just plain text with emoji bullets.
-Be concise, max 100 words total."""
+Зроби 3 bullet points українською (без ** або ##, тільки текст і emoji).
+Що важливо для backend розробника (Go, Python, AI/ML). До 100 слів."""
 
 
 def summarize(
@@ -30,7 +31,10 @@ def summarize(
             f"{cfg.url}/v1/chat/completions",
             json={
                 "model": cfg.model,
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt},
+                ],
                 "stream": False,
                 "max_tokens": cfg.max_tokens,
                 "temperature": cfg.temperature,
