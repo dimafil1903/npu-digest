@@ -7,8 +7,32 @@ from .llm import summarize
 from .telegram import send
 
 
+def ensure_model_loaded(cfg) -> bool:
+    """Load model if not already loaded."""
+    import requests
+    try:
+        resp = requests.get(f"{cfg.rkllama.url}/models", timeout=5)
+        loaded = resp.json().get("models", [])
+        if cfg.rkllama.model not in loaded:
+            print(f"Loading model {cfg.rkllama.model}...")
+            r = requests.post(
+                f"{cfg.rkllama.url}/load_model",
+                json={"model_name": cfg.rkllama.model},
+                timeout=300,
+            )
+            print(f"  {r.json()}")
+        return True
+    except Exception as e:
+        print(f"rkllama not available: {e}")
+        return False
+
+
 def run(config_path: str = "config.yaml") -> None:
     cfg = load_config(config_path)
+
+    if not ensure_model_loaded(cfg):
+        print("Aborting: rkllama unavailable.")
+        return
 
     print("Fetching RSS feeds...")
     articles = fetch_all(cfg.feeds)
