@@ -1,0 +1,22 @@
+telegram:
+  bot_token: "YOUR_BOT_TOKEN"
+  chat_id: 123456789
+
+rkllama:
+  url: "http://127.0.0.1:8080"
+  model: "qwen3-4b-instruct-npu"
+  max_tokens: 512
+  temperature: 0.7
+
+feeds:
+  - name: "Hacker News"
+    url: "https://news.ycombinator.com/rss"
+    max_items: 5
+  - name: "The Verge"
+    url: "https://www.theverge.com/rss/index.xml"
+    max_items: 3
+
+digest:
+  chunk_size: 1500       # max words per chunk sent to LLM
+  max_article_words: 3000  # truncate articles longer than this
+  send_time: "07:30"     # for cron reference only
